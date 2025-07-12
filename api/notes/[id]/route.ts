@@ -42,3 +42,30 @@ export async function DELETE(request: Request, { params }: Props) {
     );
   }
 }
+
+export async function PATCH(request: Request, { params }: Props) {
+  const cookieStore = await cookies();
+  const { id } = await params;
+  const body = await request.json();
+
+  try {
+    const { data } = await api.patch(`/notes/${id}`, body, {
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+    });
+    if (data) {
+      return NextResponse.json(data);
+    }
+    return NextResponse.json(
+      { error: "Failed to update note" },
+      { status: 500 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { error: "Failed to update note" },
+      { status: 500 }
+    );
+  }
+}
